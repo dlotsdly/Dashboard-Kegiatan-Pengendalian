@@ -395,3 +395,13 @@ function closeDetailModal() {
 function closeModalOnBackdrop(e) {
   if (e.target.id === "detailModal") closeDetailModal();
 }
+function toggleSidebar() {
+  const layout = document.querySelector(".app-layout");
+  if (window.innerWidth <= 768) {
+    // Untuk layar HP
+    layout.classList.toggle("sidebar-mobile-open");
+  } else {
+    // Untuk layar Laptop/PC
+    layout.classList.toggle("sidebar-collapsed");
+  }
+}
