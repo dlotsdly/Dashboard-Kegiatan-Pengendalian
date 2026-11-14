@@ -1,418 +1,306 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Kegiatan Pengendalian Tata Ruang DPUTR</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Tim Pengendalian - DPUTR</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js untuk Grafik -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="style.css" />
 </head>
 <body data-theme="light">
 
-  <div class="app-layout">
-    <!-- SIDEBAR NAVIGASI -->
-    <aside class="app-sidebar" id="appSidebar">
-      <div class="sidebar-brand">
-        <div class="brand-icon">🏛️</div>
-        <span class="brand-text">Dashboard Tim Pengendalian</span>
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="nav-toggle" onclick="toggleSidebar()" aria-label="Buka atau tutup menu"><span></span><span></span><span></span></button>
+      <div class="brand">
+        <div class="app-logo">🏛️</div>
+        <div class="brand-text"><strong>Dashboard Tim</strong><small>Pengendalian</small></div>
       </div>
-      
-      <div class="sidebar-menu-label">MENU UTAMA</div>
-      <nav class="sidebar-nav">
+    </div>
+    <div class="account" id="account">
+      <button class="account-btn" onclick="toggleAccountMenu(event)" aria-haspopup="true" aria-expanded="false">
+        <span class="avatar">A</span>
+        <span class="account-info"><strong>Administrator</strong><small>Akun admin</small></span>
+        <span class="chev">▾</span>
+      </button>
+      <div class="account-menu" id="account-menu">
+        <div class="account-menu-head"><span class="avatar lg">A</span><div><strong>Administrator</strong><small>Tim Pengendalian</small></div></div>
+        <button>Profil saya</button>
+        <button>Pengaturan</button>
+        <button class="danger">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+    <aside class="sidebar">
+      <div class="sidebar-menu-label">Menu utama</div>
+      <div class="sidebar-menu">
         <button class="sidebar-item active" data-tab="ippr" onclick="switchTab('ippr')">
-          <span class="s-icon">📋</span>
-          <span class="s-text">Rekap IPPR</span>
-          <span class="s-badge" id="count-tab-ippr">0</span>
+          <span>📋</span><span>Rekap IPPR</span><span class="badge" id="count-tab-ippr">0</span>
         </button>
         <button class="sidebar-item" data-tab="notulensi" onclick="switchTab('notulensi')">
-          <span class="s-icon">🤝</span>
-          <span class="s-text">Rekap Rapat dan Verlap</span>
-          <span class="s-badge" id="count-tab-notulensi">0</span>
+          <span>🤝</span><span>Rekap Rapat dan Verlap</span><span class="badge" id="count-tab-notulensi">0</span>
         </button>
         <button class="sidebar-item" data-tab="pengaduan" onclick="switchTab('pengaduan')">
-          <span class="s-icon">📢</span>
-          <span class="s-text">Rekap Pengaduan</span>
-          <span class="s-badge" id="count-tab-pengaduan">0</span>
+          <span>📢</span><span>Rekap Pengaduan</span><span class="badge" id="count-tab-pengaduan">0</span>
         </button>
-      </nav>
-
+      </div>
       <div class="sidebar-footer">
-        <div class="realtime-badge">
-          <span class="pulse-dot"></span>
-          <span>Sinkronisasi Google Sheets</span>
-        </div>
+        <button class="theme-toggle-btn" onclick="toggleDarkMode()">
+          <span>🌙</span> <span id="theme-text">Mode Gelap</span>
+        </button>
       </div>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
-    <div class="main-content-wrapper">
-      <header class="app-header">
-        <div class="header-left">
-          <button class="btn-toggle-sidebar" onclick="toggleSidebar()" title="Buka/Tutup Menu">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-          </button>
-          <div>
-            <h1 id="header-main-title">Rekapitulasi IPPR</h1>
-            <p id="header-subtitle">Monitoring Pengendalian dan Penertiban di Kabupaten Bandung.</p>
-          </div>
-        </div>
+    <main class="main-content">
+      <div class="page-head">
+        <h1 id="header-main-title">Progres IPPR</h1>
+        <p id="header-subtitle">Monitoring Perizinan Pemanfaatan Ruang dan Dokumen Tata Ruang.</p>
+      </div>
 
-        <div class="header-right">
-          <!-- Tombol Mode Gelap -->
-          <button class="btn-theme-toggle" onclick="toggleDarkMode()" title="Ganti Tema Terang/Gelap">
-            <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-            <span id="theme-text">Mode Gelap</span>
-          </button>
-        </div>
-      </header>
+      <div class="content-body">
 
-      <main class="main-container">
-
-        <!-- ==================== TAB 1: PROGRES IPPR ==================== -->
-        <section id="view-ippr" class="window-view active">
-          <div class="kpi-grid">
-            <div class="kpi-card primary">
-              <div class="kpi-icon blue">📁</div>
-              <div class="kpi-info">
-                <span class="kpi-label">TOTAL BERKAS MASUK</span>
-                <strong class="kpi-value" id="ippr-total">0</strong>
-                <span class="kpi-sub">Berkas Masuk Arahan ke Tim Pengendalian</span>
-              </div>
+        <!-- TAB 1: IPPR -->
+        <div class="window-view active" id="view-ippr">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon i-brand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.7 4H7.2a2 2 0 0 0-1.7 1.1z"/></svg></div>
+              <div class="stat-label">TOTAL BERKAS MASUK</div>
+              <div class="stat-value" id="ippr-total">0</div>
+              <div class="stat-desc">Akumulasi Seluruh Berkas</div>
             </div>
-            <div class="kpi-card">
-              <div class="kpi-icon purple">🏛️</div>
-              <div class="kpi-info">
-                <span class="kpi-label">TAHAP FGD</span>
-                <strong class="kpi-value" id="ippr-fgd">0</strong>
-                <span class="kpi-sub">Pembahasan Mengenai Pengenaan Sanksi ADM</span>
-              </div>
+            <div class="stat-card">
+              <div class="stat-icon i-fgd"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+              <div class="stat-label">TAHAP FGD</div>
+              <div class="stat-value" id="ippr-fgd">0</div>
+              <div class="stat-desc">Pembahasan Pengenaan Sanksi ADM</div>
             </div>
-            <div class="kpi-card">
-              <div class="kpi-icon amber">⚖️</div>
-              <div class="kpi-info">
-                <span class="kpi-label">KAJIAN TEKNIS & HUKUM</span>
-                <strong class="kpi-value" id="ippr-kajian">0</strong>
-                <span class="kpi-sub">Progres Kajian Meja Oleh Tim</span>
-              </div>
+            <div class="stat-card">
+              <div class="stat-icon i-kajian"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18"/><path d="M5 7h14"/><path d="m5 7-3 7a3 3 0 0 0 6 0z"/><path d="m19 7-3 7a3 3 0 0 0 6 0z"/><path d="M8 21h8"/></svg></div>
+              <div class="stat-label">KAJIAN TEKNIS & HUKUM</div>
+              <div class="stat-value" id="ippr-kajian">0</div>
+              <div class="stat-desc">Progres Kajian Meja Tim</div>
             </div>
-            <div class="kpi-card">
-              <div class="kpi-icon green">✅</div>
-              <div class="kpi-info">
-                <span class="kpi-label">IPPR SELESAI</span>
-                <strong class="kpi-value" id="ippr-selesai">0</strong>
-                <span class="kpi-sub">Sudah Pengenaan Sanksi</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="card filter-card">
-            <div class="card-header">
-              <h3>Filter Data Progres IPPR</h3>
-              <button class="btn-reset" onclick="resetIpprFilters()">Reset Filter</button>
-            </div>
-            <div class="filter-grid">
-              <div class="form-group">
-                <label>Filter Jenis Berkas</label>
-                <select id="ippr-filter-jenis" onchange="renderIpprView()">
-                  <option value="ALL">Semua Jenis Berkas</option>
-                  <option value="Arahan Kementerian/Dinas">Arahan Kementerian/Dinas</option>
-                  <option value="Pengaduan Masyarakat">Pengaduan Masyarakat</option>
-                  <option value="Perubahan Fungsi Ruang">Perubahan Fungsi Ruang</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Filter Status Berkas</label>
-                <select id="ippr-filter-status" onchange="renderIpprView()">
-                  <option value="ALL">Semua Status</option>
-                  <option value="FGD">FGD</option>
-                  <option value="Kajian Teknis dan Kajian Hukum">Kajian Teknis dan Kajian Hukum</option>
-                  <option value="Selesai">Selesai</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Filter Kecamatan</label>
-                <select id="ippr-filter-kecamatan" onchange="renderIpprView()">
-                  <option value="ALL">Semua Kecamatan</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Cari Pemohon / Kegiatan / Kode</label>
-                <input type="text" id="ippr-search" placeholder="Ketik nama PT, kegiatan, kode kasus..." oninput="renderIpprView()" />
-              </div>
+            <div class="stat-card">
+              <div class="stat-icon i-selesai"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg></div>
+              <div class="stat-label">SELESAI</div>
+              <div class="stat-value" id="ippr-selesai">0</div>
+              <div class="stat-desc">Berkas Selesai Diproses</div>
             </div>
           </div>
 
           <div class="split-grid">
-            <div class="card">
-              <div class="card-header">
-                <h3>Ringkasan per Jenis Berkas</h3>
-              </div>
-              <div class="breakdown-cards" id="ippr-jenis-cards"></div>
+            <div class="section-box">
+              <h3>Ringkasan per Jenis Berkas</h3>
+              <div class="mini-cards-container" id="ippr-jenis-cards"></div>
             </div>
-            <div class="card">
-              <div class="card-header">
-                <h3>Distribusi Berkas per Kecamatan</h3>
-              </div>
-              <div class="chart-wrapper">
-                <canvas id="ipprChart"></canvas>
-              </div>
+            <div class="section-box">
+              <h3>Sebaran per Kecamatan</h3>
+              <div class="chart-container"><canvas id="ipprChart"></canvas></div>
             </div>
           </div>
 
-          <div class="card table-card">
-            <div class="card-header">
-              <div>
-                <h3>Tabel Data Progres IPPR</h3>
-                <p class="card-sub" id="ippr-table-info">Menampilkan 0 data</p>
-              </div>
+          <div class="section-box">
+            <div class="filter-toolbar">
+              <select id="ippr-filter-jenis" onchange="renderIpprView()">
+                <option value="ALL">Semua Jenis Berkas</option>
+                <option value="Arahan">Arahan</option>
+                <option value="Pengaduan">Pengaduan</option>
+                <option value="Inisiatif">Inisiatif</option>
+              </select>
+              <select id="ippr-filter-status" onchange="renderIpprView()">
+                <option value="ALL">Semua Status</option>
+                <option value="FGD">FGD</option>
+                <option value="Kajian">Kajian</option>
+                <option value="Selesai">Selesai</option>
+              </select>
+              <select id="ippr-filter-kecamatan" onchange="renderIpprView()">
+                <option value="ALL">Semua Kecamatan</option>
+              </select>
+              <input type="text" id="ippr-search" placeholder="Cari data IPPR..." oninput="renderIpprView()">
+              <button class="btn-reset" onclick="resetIpprFilters()">Reset</button>
             </div>
-            <div class="table-responsive">
+
+            <div class="table-container">
               <table>
                 <thead>
                   <tr>
-                    <th>NO</th>
-                    <th>TGL BERKAS MASUK</th>
-                    <th>JENIS BERKAS</th>
-                    <th>KETERANGAN</th>
-                    <th>KECAMATAN</th>
-                    <th>KODE KASUS</th>
-                    <th>STATUS BERKAS</th>
-                    <th>CATATAN</th>
-                    <th>NAMA PEMOHON / PT</th>
-                    <th>NAMA KEGIATAN</th>
-                    <th>KODE KBLI</th>
-                    <th>ALAMAT LAHAN</th>
-                    <th>LUAS LAHAN (M²)</th>
-                    <th>KOORDINAT</th>
-                    <th>NO TELP</th>
-                    <th>NOP</th>
-                    <th>PIC / PPK</th>
-                    <th>LINK DRIVE</th>
-                    <th>AKSI</th>
+                    <th>No</th>
+                    <th>Tgl Masuk</th>
+                    <th>Jenis Berkas</th>
+                    <th>Keterangan</th>
+                    <th>Kode Kasus</th>
+                    <th>Status</th>
+                    <th>Kegiatan</th>
+                    <th>KBLI</th>
+                    <th>Luas (m²)</th>
+                    <th>PIC</th>
+                    <th>Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="ippr-tbody"></tbody>
               </table>
             </div>
-          </div>
-        </section>
-
-        <!-- ==================== TAB 2: NOTULENSI RAPAT/VERLAP ==================== -->
-        <section id="view-notulensi" class="window-view">
-          <div class="kpi-grid">
-            <div class="kpi-card primary">
-              <div class="kpi-icon blue">📅</div>
-              <div class="kpi-info">
-                <span class="kpi-label">TOTAL KEGIATAN</span>
-                <strong class="kpi-value" id="notul-total">0</strong>
-                <span class="kpi-sub">Rapat & Verifikasi Lapangan</span>
-              </div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-icon purple">🗣️</div>
-              <div class="kpi-info">
-                <span class="kpi-label">RAPAT / FGD</span>
-                <strong class="kpi-value" id="notul-rapat">0</strong>
-                <span class="kpi-sub">Sidang Pembahasan</span>
-              </div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-icon amber">📍</div>
-              <div class="kpi-info">
-                <span class="kpi-label">VERIFIKASI LAPANGAN</span>
-                <strong class="kpi-value" id="notul-verlap">0</strong>
-                <span class="kpi-sub">Cek Eksisting Lokasi</span>
-              </div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-icon green">✅</div>
-              <div class="kpi-info">
-                <span class="kpi-label">SELESAI / FINAL</span>
-                <strong class="kpi-value" id="notul-selesai">0</strong>
-                <span class="kpi-sub">Notulensi Ditandatangani</span>
-              </div>
+            <div class="table-footer">
+              <span id="ippr-table-info">Menampilkan 0 data</span>
             </div>
           </div>
 
-          <div class="card filter-card">
-            <div class="card-header">
-              <h3>Filter Notulensi Rapat & Verlap</h3>
-              <button class="btn-reset" onclick="resetNotulFilters()">Reset Filter</button>
+          
+        </div>
+
+        <!-- TAB 2: NOTULENSI -->
+        <div class="window-view" id="view-notulensi">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon i-brand"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+              <div class="stat-label">TOTAL KEGIATAN</div>
+              <div class="stat-value" id="notul-total">0</div>
             </div>
-            <div class="filter-grid">
-              <div class="form-group">
-                <label>Jenis Kegiatan</label>
-                <select id="notul-filter-jenis" onchange="renderNotulView()">
-                  <option value="ALL">Semua Jenis</option>
-                  <option value="Rapat">Rapat</option>
-                  <option value="Verlap">Verlap</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Cari Judul / Tempat / Notulen</label>
-                <input type="text" id="notul-search" placeholder="Ketik judul kegiatan atau tempat..." oninput="renderNotulView()" />
-              </div>
+            <div class="stat-card">
+              <div class="stat-icon i-kajian"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+              <div class="stat-label">RAPAT KOORDINASI</div>
+              <div class="stat-value" id="notul-rapat">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon i-fgd"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+              <div class="stat-label">VERIFIKASI LAPANGAN</div>
+              <div class="stat-value" id="notul-verlap">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon i-selesai"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9 15 2 2 4-4"/></svg></div>
+              <div class="stat-label">SELESAI DOKUMENTASI</div>
+              <div class="stat-value" id="notul-selesai">0</div>
             </div>
           </div>
 
-          <div class="split-grid">
-            <div class="card">
-              <div class="card-header">
-                <h3>Agenda & Kegiatan Terkini</h3>
-              </div>
-              <div class="timeline-list" id="notul-highlights"></div>
-            </div>
-            <div class="card">
-              <div class="card-header">
-                <h3>Grafik Komposisi Kegiatan</h3>
-              </div>
-              <div class="chart-wrapper">
-                <canvas id="notulChart"></canvas>
-              </div>
-            </div>
+          <div class="section-box">
+            <h3>Agenda / Notulensi Terbaru</h3>
+            <div id="notul-highlights" style="margin-top: 10px;"></div>
           </div>
 
-          <div class="card table-card">
-            <div class="card-header">
-              <div>
-                <h3>Tabel Notulensi Rapat / Verlap</h3>
-                <p class="card-sub" id="notul-table-info">Menampilkan 0 kegiatan</p>
-              </div>
+          <div class="section-box">
+            <div class="filter-toolbar">
+              <select id="notul-filter-jenis" onchange="renderNotulView()">
+                <option value="ALL">Semua Jenis</option>
+                <option value="Rapat">Rapat</option>
+                <option value="Verlap">Verlap</option>
+              </select>
+              <input type="text" id="notul-search" placeholder="Cari notulensi..." oninput="renderNotulView()">
+              <button class="btn-reset" onclick="resetNotulFilters()">Reset</button>
             </div>
-            <div class="table-responsive">
+
+            <div class="table-container">
               <table>
                 <thead>
                   <tr>
-                    <th>NO</th>
-                    <th>TANGGAL RAPAT / VERLAP</th>
-                    <th>JENIS</th>
-                    <th>JUDUL KEGIATAN</th>
-                    <th>TEMPAT</th>
-                    <th>PESERTA / PERSONIL</th>
-                    <th>NOTULEN</th>
-                    <th>OPERATOR / ABSENSI</th>
-                    <th>KESIMPULAN / HASIL AKHIR</th>
-                    <th>LINK DRIVE</th>
-                    <th>AKSI</th>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Jenis</th>
+                    <th>Judul Kegiatan</th>
+                    <th>Tempat</th>
+                    <th>Peserta</th>
+                    <th>Notulen</th>
+                    <th>Operator</th>
+                    <th>Kesimpulan</th>
+                    <th>Drive</th>
+                    <th>Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="notul-tbody"></tbody>
               </table>
             </div>
-          </div>
-        </section>
-
-        <!-- ==================== TAB 3: REKAP PENGADUAN ==================== -->
-        <section id="view-pengaduan" class="window-view">
-          <div class="kpi-grid">
-            <div class="kpi-card primary">
-              <div class="kpi-icon blue">📢</div>
-              <div class="kpi-info">
-                <span class="kpi-label">TOTAL PENGADUAN</span>
-                <strong class="kpi-value" id="aduan-total">0</strong>
-                <span class="kpi-sub">Laporan Masuk Terdaftar</span>
-              </div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-icon amber">🔍</div>
-              <div class="kpi-info">
-                <span class="kpi-label">DALAM PENANGANAN</span>
-                <strong class="kpi-value" id="aduan-proses">0</strong>
-                <span class="kpi-sub">Verlap & Tindak Lanjut</span>
-              </div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-icon green">🛡️</div>
-              <div class="kpi-info">
-                <span class="kpi-label">SELESAI / TERTANAM</span>
-                <strong class="kpi-value" id="aduan-selesai">0</strong>
-                <span class="kpi-sub">Kasus Ditutup</span>
-              </div>
+            <div class="table-footer">
+              <span id="notul-table-info">Menampilkan 0 kegiatan</span>
             </div>
           </div>
 
-          <div class="card filter-card">
-            <div class="card-header">
-              <h3>Filter Rekap Pengaduan</h3>
-              <button class="btn-reset" onclick="resetAduanFilters()">Reset Filter</button>
+          <div class="section-box">
+            <h3>Komposisi Rapat vs Verifikasi Lapangan</h3>
+            <div class="chart-container" style="max-width: 400px; margin: 0 auto;">
+              <canvas id="notulChart"></canvas>
             </div>
-            <div class="filter-grid">
-              <div class="form-group">
-                <label>Kecamatan Aduan</label>
-                <select id="aduan-filter-kecamatan" onchange="renderAduanView()">
-                  <option value="ALL">Semua Kecamatan</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Cari Pengadu / Perihal / Alamat</label>
-                <input type="text" id="aduan-search" placeholder="Ketik nama pengadu atau perihal..." oninput="renderAduanView()" />
-              </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: PENGADUAN -->
+        <div class="window-view" id="view-pengaduan">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon i-brand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
+              <div class="stat-label">TOTAL PENGADUAN</div>
+              <div class="stat-value" id="aduan-total">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon i-fgd"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+              <div class="stat-label">DALAM PENANGANAN</div>
+              <div class="stat-value" id="aduan-proses">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon i-selesai"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg></div>
+              <div class="stat-label">SELESAI DITANGANI</div>
+              <div class="stat-value" id="aduan-selesai">0</div>
             </div>
           </div>
 
-          <div class="split-grid">
-            <div class="card">
-              <div class="card-header">
-                <h3>Sebaran Aduan per Kecamatan</h3>
-              </div>
-              <div class="chart-wrapper">
-                <canvas id="aduanChart"></canvas>
-              </div>
+          <div class="section-box">
+            <div class="filter-toolbar">
+              <select id="aduan-filter-kecamatan" onchange="renderAduanView()">
+                <option value="ALL">Semua Kecamatan</option>
+              </select>
+              <input type="text" id="aduan-search" placeholder="Cari pengaduan..." oninput="renderAduanView()">
+              <button class="btn-reset" onclick="resetAduanFilters()">Reset</button>
             </div>
-            <div class="card">
-              <div class="card-header">
-                <h3>Statistik Status Penanganan</h3>
-              </div>
-              <div class="breakdown-cards" id="aduan-status-cards"></div>
-            </div>
-          </div>
 
-          <div class="card table-card">
-            <div class="card-header">
-              <div>
-                <h3>Tabel Rekapitulasi Pengaduan</h3>
-                <p class="card-sub" id="aduan-table-info">Menampilkan 0 pengaduan</p>
-              </div>
-            </div>
-            <div class="table-responsive">
+            <div class="table-container">
               <table>
                 <thead>
                   <tr>
-                    <th>NO</th>
-                    <th>BERKAS ADUAN MASUK</th>
-                    <th>NAMA PENGADU</th>
-                    <th>KECAMATAN ADUAN</th>
-                    <th>ALAMAT LENGKAP ADUAN</th>
-                    <th>PERIHAL</th>
-                    <th>PENANGANAN</th>
-                    <th>LINK DRIVE</th>
-                    <th>AKSI</th>
+                    <th>No</th>
+                    <th>Tgl Masuk</th>
+                    <th>Nama Pengadu</th>
+                    <th>Kecamatan</th>
+                    <th>Alamat</th>
+                    <th>Perihal / Substansi</th>
+                    <th>Penanganan</th>
+                    <th>Drive</th>
+                    <th>Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="aduan-tbody"></tbody>
               </table>
             </div>
+            <div class="table-footer">
+              <span id="aduan-table-info">Menampilkan 0 pengaduan</span>
+            </div>
           </div>
-        </section>
 
-      </main>
-    </div>
+          <div class="section-box">
+            <h3>Sebaran Pengaduan per Kecamatan</h3>
+            <div class="chart-container">
+              <canvas id="aduanChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
   </div>
 
   <!-- MODAL DETAIL -->
-  <div id="detailModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
+  <div class="modal-backdrop" id="detailModal" onclick="closeModalOnBackdrop(event)">
     <div class="modal-box">
       <div class="modal-header">
         <h3 id="modal-title">Detail Informasi</h3>
-        <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+        <button class="modal-close" onclick="closeDetailModal()">×</button>
       </div>
       <div class="modal-body" id="modal-body"></div>
-      <div class="modal-footer">
-        <button class="btn-secondary" onclick="closeDetailModal()">Tutup</button>
-      </div>
     </div>
   </div>
 
